@@ -1,0 +1,55 @@
+using UnityEngine;
+
+public class MapGenerator : MonoBehaviour
+{
+    public GameObject platformPrefab;  // 플랫폼 프리팹
+    public GameObject groundPrefab;    // 지면 프리팹
+    public GameObject backgroundPrefab; // 배경 프리팹
+
+    public int mapWidth = 50;  // 맵의 가로 크기
+    public int mapHeight = 10; // 맵의 세로 크기
+    public float platformHeightMin = 1f; // 최소 플랫폼 높이
+    public float platformHeightMax = 5f; // 최대 플랫폼 높이
+    public float platformSpacingMin = 2f; // 최소 간격
+    public float platformSpacingMax = 5f; // 최대 간격
+
+    private float lastPlatformX; // 마지막으로 생성된 플랫폼의 X 위치
+
+    void Start()
+    {
+        GenerateMap();
+    }
+
+    void GenerateMap()
+    {
+        // 배경 생성
+        for (int i = 0; i < mapWidth; i++)
+        {
+            Instantiate(backgroundPrefab, new Vector3(i * 10f, 0, 0), Quaternion.identity);
+        }
+
+        // 플랫폼과 지면 생성
+        lastPlatformX = 0;
+
+        // 맵의 높이를 기준으로 바닥 생성
+        for (int x = 0; x < mapWidth; x++)
+        {
+            Instantiate(groundPrefab, new Vector3(x * 1.0f, -2f, 0), Quaternion.identity);
+        }
+
+        // 플랫폼 생성
+        while (lastPlatformX < mapWidth)
+        {
+            // 랜덤 높이와 간격을 계산하여 플랫폼 생성
+            float platformHeight = Random.Range(platformHeightMin, platformHeightMax);
+            float platformSpacing = Random.Range(platformSpacingMin, platformSpacingMax);
+
+            // 플랫폼 생성
+            Vector3 platformPosition = new Vector3(lastPlatformX, platformHeight, 0);
+            Instantiate(platformPrefab, platformPosition, Quaternion.identity);
+
+            // 다음 플랫폼의 위치 업데이트
+            lastPlatformX += platformSpacing;
+        }
+    }
+}
