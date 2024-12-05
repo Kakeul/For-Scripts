@@ -1,0 +1,27 @@
+using UnityEngine;
+
+public class EnemyShooting : MonoBehaviour
+{
+    public GameObject bulletPrefab; // 총알 Prefab
+    public Transform shootingPoint; // 총알이 발사되는 위치
+    public float shootingInterval = 1f; // 총알 발사 간격
+
+    private float nextShootTime = 0f;
+
+    void Update()
+    {
+        if (Time.time >= nextShootTime)
+        {
+            ShootBullet();
+            nextShootTime = Time.time + shootingInterval;
+        }
+    }
+
+    void ShootBullet()
+    {
+        // 플레이어 방향을 향해 총알을 발사
+        Vector2 direction = (PlayerController.instance.transform.position - transform.position).normalized;
+        GameObject bullet = Instantiate(bulletPrefab, shootingPoint.position, Quaternion.identity);
+        bullet.GetComponent<Rigidbody2D>().velocity = direction * 10f; // 총알 속도
+    }
+}
