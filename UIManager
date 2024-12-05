@@ -1,0 +1,41 @@
+using UnityEngine;
+using UnityEngine.UI;
+
+public class UIManager : MonoBehaviour
+{
+    public GameObject gameOverUI; // 게임 오버 UI 오브젝트
+    public GameObject stageClearUI; // 스테이지 클리어 UI 오브젝트
+    public GameObject playerDeathUI; // 플레이어 죽음 UI 오브젝트 (새로 추가된 UI)
+
+    // 게임 오버 UI 표시
+    public void ShowGameOver()
+    {
+        gameOverUI.SetActive(true);  // 게임 오버 UI 활성화
+        stageClearUI.SetActive(false); // 스테이지 클리어 UI 비활성화
+        playerDeathUI.SetActive(false); // 플레이어 죽음 UI 비활성화
+    }
+
+    // 스테이지 클리어 UI 표시
+    public void ShowStageClear()
+    {
+        stageClearUI.SetActive(true);  // 스테이지 클리어 UI 활성화
+        gameOverUI.SetActive(false); // 게임 오버 UI 비활성화
+        playerDeathUI.SetActive(false); // 플레이어 죽음 UI 비활성화
+    }
+
+    // 플레이어 죽음 UI 표시
+    public void ShowPlayerDeath()
+    {
+        playerDeathUI.SetActive(true); // 플레이어 죽음 UI 활성화
+        gameOverUI.SetActive(false);  // 게임 오버 UI 비활성화
+        stageClearUI.SetActive(false); // 스테이지 클리어 UI 비활성화
+    }
+
+    // UI 숨기기
+    public void HideUI()
+    {
+        gameOverUI.SetActive(false);
+        stageClearUI.SetActive(false);
+        playerDeathUI.SetActive(false); // 플레이어 죽음 UI 숨기기
+    }
+}
