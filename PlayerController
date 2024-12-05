@@ -1,0 +1,64 @@
+using UnityEngine;
+
+public class PlayerController : MonoBehaviour
+{
+    public float moveSpeed = 5f; // 이동 속도
+    public float jumpForce = 10f; // 점프 힘
+    public float descendSpeed = 2f; // 내려가는 속도
+    public Transform groundCheck; // 바닥 체크 위치
+    public LayerMask groundLayer; // 바닥 레이어
+    public LayerMask platformLayer; // 내려갈 수 있는 플랫폼 레이어
+
+    private Rigidbody2D rb;
+    private bool isGrounded;
+    private bool canDescend; // 내려갈 수 있는지 여부
+
+    void Start()
+    {
+        rb = GetComponent<Rigidbody2D>();
+    }
+
+    void Update()
+    {
+        // 바닥에 있는지 체크
+        isGrounded = Physics2D.OverlapCircle(groundCheck.position, 0.1f, groundLayer);
+
+        // 이동
+        float moveInput = Input.GetAxis("Horizontal"); // A/D 또는 화살표 키로 이동
+        rb.velocity = new Vector2(moveInput * moveSpeed, rb.velocity.y);
+
+        // 점프 (W 키나 위 화살표 키로 점프)
+        if (isGrounded && (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)))
+        {
+            rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+        }
+
+        // 내려가기 (S 키나 아래 화살표 키로 내려가기)
+        if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
+        {
+            // 현재 플레이어가 플랫폼에 닿아 있을 때만 내려갈 수 있도록 설정
+            if (canDescend)
+            {
+                rb.velocity = new Vector2(rb.velocity.x, -descendSpeed); 
+            }
+        }
+    }
+
+    // 플레이어가 플랫폼에 닿을 때 내려갈 수 있게 설정
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (((1 << collision.gameObject.layer) & platformLayer) != 0)  // 플랫폼 레이어인지 확인
+        {
+            canDescend = true; // 플랫폼에 닿았으면 내려갈 수 있도록
+        }
+    }
+
+    // 플랫폼에서 벗어났을 때 내려갈 수 없도록 설정
+    void OnCollisionExit2D(Collision2D collision)
+    {
+        if (((1 << collision.gameObject.layer) & platformLayer) != 0)  // 플랫폼 레이어인지 확인
+        {
+            canDescend = false; // 플랫폼에서 벗어나면 내려갈 수 없도록
+        }
+    }
+}
