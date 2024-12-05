@@ -1,0 +1,12 @@
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class Restart : MonoBehaviour
+{
+    // 게임 오버 UI 버튼에서 호출될 메서드
+    public void RestartGame()
+    {
+        // "GameScene"이라는 씬으로 전환
+        SceneManager.LoadScene("GameScene");
+    }
+}
