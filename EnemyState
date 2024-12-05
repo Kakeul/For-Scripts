@@ -1,0 +1,31 @@
+public enum EnemyState
+{
+    Idle,
+    Moving,
+    Jumping,
+    Attacking
+}
+
+public class EnemyState : MonoBehaviour
+{
+    private EnemyState currentState;
+
+    void Update()
+    {
+        switch (currentState)
+        {
+            case EnemyState.Idle:
+                // 대기 상태
+                break;
+            case EnemyState.Moving:
+                // 이동 상태
+                break;
+            case EnemyState.Jumping:
+                // 점프 상태
+                break;
+            case EnemyState.Attacking:
+                // 공격 상태
+                break;
+        }
+    }
+}
