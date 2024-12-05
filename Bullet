@@ -1,0 +1,38 @@
+using UnityEngine;
+
+public class Bullet : MonoBehaviour
+{
+    public float damage = 10f; // 총알 피해
+
+    // 총알이 다른 오브젝트와 충돌했을 때
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        // 적과 충돌한 경우
+        if (collision.gameObject.CompareTag("Enemy"))
+        {
+            // 적의 체력에 피해를 줍니다.
+            EnemyHealthBar enemyHealth = collision.gameObject.GetComponent<EnemyHealthBar>();
+            if (enemyHealth != null)
+            {
+                enemyHealth.TakeDamage(damage); // 적 체력 감소
+            }
+
+            // 총알이 적과 충돌했으므로 총알을 파괴
+            Destroy(gameObject);
+        }
+
+        // 플레이어와 충돌한 경우
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            // 플레이어의 체력에 피해를 줍니다.
+            PlayerHealthBar playerHealth = collision.gameObject.GetComponent<PlayerHealthBar>();
+            if (playerHealth != null)
+            {
+                playerHealth.TakeDamage(damage); // 플레이어 체력 감소
+            }
+
+            // 총알이 플레이어와 충돌했으므로 총알을 파괴
+            Destroy(gameObject);
+        }
+    }
+}
