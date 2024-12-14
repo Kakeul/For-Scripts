@@ -1,4 +1,6 @@
-public enum EnemyState
+using UnityEngine;
+
+public enum EnemyStateType  // enum 이름 변경
 {
     Idle,
     Moving,
@@ -8,22 +10,22 @@ public enum EnemyState
 
 public class EnemyState : MonoBehaviour
 {
-    private EnemyState currentState;
+    private EnemyStateType currentState;  // enum 타입도 변경된 이름 사용
 
     void Update()
     {
         switch (currentState)
         {
-            case EnemyState.Idle:
+            case EnemyStateType.Idle:
                 // 대기 상태
                 break;
-            case EnemyState.Moving:
+            case EnemyStateType.Moving:
                 // 이동 상태
                 break;
-            case EnemyState.Jumping:
+            case EnemyStateType.Jumping:
                 // 점프 상태
                 break;
-            case EnemyState.Attacking:
+            case EnemyStateType.Attacking:
                 // 공격 상태
                 break;
         }
