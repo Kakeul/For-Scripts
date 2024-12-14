@@ -6,7 +6,7 @@ public class EnemyAI : MonoBehaviour
     public float jumpForce = 5f; // 점프 힘
     public Transform player; // 플레이어 위치
     public LayerMask groundLayer; // ground 레이어
-    
+
     private Rigidbody2D rb;
     private bool isGrounded;
 
@@ -19,7 +19,7 @@ public class EnemyAI : MonoBehaviour
     {
         // AI가 점프할 준비가 되어 있는지 확인
         isGrounded = Physics2D.OverlapCircle(transform.position, 0.1f, groundLayer);
-        
+
         MoveAI();
         JumpAI();
     }
