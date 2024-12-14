@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    public static PlayerController instance; // 싱글톤을 위한 정적 변수
+
     public float moveSpeed = 5f; // 이동 속도
     public float jumpForce = 10f; // 점프 힘
     public float descendSpeed = 2f; // 내려가는 속도
@@ -12,6 +14,19 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D rb;
     private bool isGrounded;
     private bool canDescend; // 내려갈 수 있는지 여부
+
+    void Awake()
+    {
+        // 싱글톤 패턴을 위한 설정
+        if (instance == null)
+        {
+            instance = this; // 현재 객체를 싱글톤 인스턴스로 설정
+        }
+        else
+        {
+            Destroy(gameObject); // 이미 인스턴스가 존재하면 해당 객체를 파괴
+        }
+    }
 
     void Start()
     {
@@ -37,9 +52,9 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
         {
             // 현재 플레이어가 플랫폼에 닿아 있을 때만 내려갈 수 있도록 설정
-            if (canDescend)
+            if (canDescend && !isGrounded)  // 바닥에 없을 때만 내려가도록
             {
-                rb.velocity = new Vector2(rb.velocity.x, -descendSpeed); 
+                rb.velocity = new Vector2(rb.velocity.x, -descendSpeed);
             }
         }
     }
