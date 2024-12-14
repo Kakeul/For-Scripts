@@ -11,7 +11,7 @@ public class Bullet : MonoBehaviour
         if (collision.gameObject.CompareTag("Enemy"))
         {
             // 적의 체력에 피해를 줍니다.
-            EnemyHealthBar enemyHealth = collision.gameObject.GetComponent<EnemyHealthBar>();
+            EnemyHealth enemyHealth = collision.gameObject.GetComponent<EnemyHealth>();
             if (enemyHealth != null)
             {
                 enemyHealth.TakeDamage(damage); // 적 체력 감소
@@ -25,7 +25,7 @@ public class Bullet : MonoBehaviour
         if (collision.gameObject.CompareTag("Player"))
         {
             // 플레이어의 체력에 피해를 줍니다.
-            PlayerHealthBar playerHealth = collision.gameObject.GetComponent<PlayerHealthBar>();
+            PlayerHealth playerHealth = collision.gameObject.GetComponent<PlayerHealth>();
             if (playerHealth != null)
             {
                 playerHealth.TakeDamage(damage); // 플레이어 체력 감소
