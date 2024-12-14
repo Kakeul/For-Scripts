@@ -20,7 +20,7 @@ public class PlayerShooting : MonoBehaviour
         // 총알을 플레이어가 보고 있는 방향으로 발사
         GameObject bullet = Instantiate(bulletPrefab, shootingPoint.position, Quaternion.identity);
         Rigidbody2D bulletRb = bullet.GetComponent<Rigidbody2D>();
-        
+
         // 총알을 오른쪽 또는 왼쪽으로 발사
         Vector2 direction = transform.localScale.x > 0 ? Vector2.right : Vector2.left;
         bulletRb.velocity = direction * shootingForce;
