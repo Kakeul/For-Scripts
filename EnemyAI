@@ -36,6 +36,9 @@ public class EnemyAI : MonoBehaviour
             {
                 MoveTowardsPlayer(); // 플레이어를 향해 이동
             }
+
+            // 플레이어의 위치에 따라 적의 방향을 조정
+            FlipTowardsPlayer();
         }
         else
         {
@@ -93,5 +96,28 @@ public class EnemyAI : MonoBehaviour
         {
             shootPoint.localPosition = new Vector3(-1f, shootPoint.localPosition.y, shootPoint.localPosition.z); // 왼쪽에 발사 위치 설정
         }
+    }
+
+    // 플레이어의 위치에 따라 적의 방향을 반전
+    void FlipTowardsPlayer()
+    {
+        // 플레이어가 적의 왼쪽에 있으면 왼쪽을 보고, 오른쪽에 있으면 오른쪽을 봄
+        if (player.position.x < transform.position.x && transform.localScale.x > 0) // 플레이어가 왼쪽에 있을 때
+        {
+            Flip(); // 왼쪽을 보기 위해 flip
+        }
+        else if (player.position.x > transform.position.x && transform.localScale.x < 0) // 플레이어가 오른쪽에 있을 때
+        {
+            Flip(); // 오른쪽을 보기 위해 flip
+        }
+    }
+
+    // Flip the character to face the player
+    void Flip()
+    {
+        // `localScale.x` 값을 반전시켜서 왼쪽 또는 오른쪽을 보도록 만듦
+        Vector3 scale = transform.localScale;
+        scale.x *= -1; // x값을 반전시켜서 방향 전환
+        transform.localScale = scale;
     }
 }
