@@ -9,9 +9,18 @@ public class EnemyAI : MonoBehaviour
     public GameObject bulletPrefab; // 총알 프리팹
     public Transform shootPoint; // 총알 발사 지점
     public float bulletSpeed = 10f; // 총알 속도
+    public float jumpForce = 5f; // 점프 힘
+    public float jumpCooldown = 2f; // 점프 쿨타임
+    private float nextJumpTime = 0f; // 다음 점프 시간
 
-    private float timeBetweenShots = 2f; // 2초에 한 번 총을 쏘는 시간 간격
+    public float timeBetweenShots = 0.3f; // x초에 한 번 총을 쏘는 시간 간격
     private float nextShotTime = 0f; // 총을 쏘기 위한 쿨타임
+
+    private bool isJumping = false; // 점프 중인지 여부
+    private bool isMovingLeft = true; // 적의 이동 방향 (왼쪽으로)
+
+    public float leftBound = -5f; // 왼쪽 끝 범위
+    public float rightBound = 5f; // 오른쪽 끝 범위
 
     void Update()
     {
@@ -23,15 +32,22 @@ public class EnemyAI : MonoBehaviour
         {
             if (distanceToPlayer <= attackRange)
             {
-                if (Time.time >= nextShotTime) // 2초마다 총을 쏘게 만듬
+                if (Time.time >= nextShotTime) // 0.7초마다 총을 쏘게 만듬
                 {
                     ShootAtPlayer();
                     nextShotTime = Time.time + timeBetweenShots; // 다음 총을 쏘기 위한 쿨타임 설정
                 }
             }
 
-            // 플레이어를 향해 회전
-            RotateTowardsPlayer();
+            // 좌우로 이동하기
+            Move();
+
+            // 점프 기능 추가 (조건에 맞을 때 점프)
+            if (Time.time >= nextJumpTime)
+            {
+                Jump();
+                nextJumpTime = Time.time + jumpCooldown; // 점프 쿨타임 설정
+            }
         }
     }
 
@@ -46,7 +62,7 @@ public class EnemyAI : MonoBehaviour
                 Rigidbody2D bulletRb = bullet.GetComponent<Rigidbody2D>();
                 if (bulletRb != null)
                 {
-                    bulletRb.linearVelocity = (player.position - transform.position).normalized * bulletSpeed;
+                    bulletRb.linearVelocity = Vector2.left * bulletSpeed; // 항상 왼쪽으로 총알 발사
                 }
                 else
                 {
@@ -60,11 +76,46 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-    void RotateTowardsPlayer()
+    void Move()
     {
-        // 플레이어의 방향을 향해 회전
-        Vector2 direction = player.position - transform.position;
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg; // 플레이어 방향 계산
-        transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle)); // 적의 회전 적용
+        // 좌우로 이동 (반복해서 왼쪽으로 이동하도록 설정)
+        if (isMovingLeft)
+        {
+            transform.position = Vector2.MoveTowards(transform.position, new Vector2(leftBound, transform.position.y), moveSpeed * Time.deltaTime);
+        }
+        else
+        {
+            transform.position = Vector2.MoveTowards(transform.position, new Vector2(rightBound, transform.position.y), moveSpeed * Time.deltaTime);
+        }
+
+        // 적이 왼쪽 끝과 오른쪽 끝에 도달하면 방향을 바꿔준다.
+        if (transform.position.x <= leftBound)
+        {
+            isMovingLeft = false; // 오른쪽으로 이동
+        }
+        else if (transform.position.x >= rightBound)
+        {
+            isMovingLeft = true; // 왼쪽으로 이동
+        }
+    }
+
+    void Jump()
+    {
+        // 점프 로직 (Rigidbody2D가 필요)
+        Rigidbody2D rb = GetComponent<Rigidbody2D>();
+        if (rb != null && !isJumping)
+        {
+            rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+            isJumping = true; // 점프 중이라고 설정
+        }
+    }
+
+    // 점프 후 바닥에 닿으면 다시 점프할 수 있게 설정
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            isJumping = false; // 바닥에 닿으면 점프 상태가 끝남
+        }
     }
 }
