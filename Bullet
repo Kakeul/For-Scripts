@@ -32,7 +32,7 @@ public class Bullet : MonoBehaviour
 
     private void Update()
     {
-        // 총알이 충돌하지 않았다면 계속 이동
+        // 충돌하지 않으면 계속 이동
         if (!hasCollided)
         {
             // 물리엔진을 사용하지 않고 수동으로 총알 이동 (이 부분은 필요 없을 수 있음)
