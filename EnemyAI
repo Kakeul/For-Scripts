@@ -59,7 +59,7 @@ public class EnemyAI : MonoBehaviour
         if (bulletRb != null)
         {
             // 플레이어 방향으로 총알 발사
-            bulletRb.velocity = (player.position - transform.position).normalized * bulletSpeed;
+            bulletRb.linearVelocity = (player.position - transform.position).normalized * bulletSpeed;
         }
         else
         {
