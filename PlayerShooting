@@ -13,6 +13,9 @@ public class PlayerShooting : MonoBehaviour
         {
             ShootBullet();
         }
+
+        // 플레이어의 회전 방향에 맞춰 슈팅 포인트 회전
+        UpdateShootingPointDirection();
     }
 
     void ShootBullet()
@@ -23,9 +26,8 @@ public class PlayerShooting : MonoBehaviour
             return; // bulletPrefab이나 shootingPoint가 없으면 발사하지 않음
         }
 
-        // 총알을 클론 형태로 생성
+        // 총알을 플레이어가 보고 있는 방향으로 발사
         GameObject bullet = Instantiate(bulletPrefab, shootingPoint.position, shootingPoint.rotation);
-
         Bullet bulletScript = bullet.GetComponent<Bullet>();
 
         if (bulletScript != null)
@@ -40,6 +42,21 @@ public class PlayerShooting : MonoBehaviour
         else
         {
             Debug.LogError("Bullet prefab does not have a Bullet script attached!");
+        }
+    }
+
+    void UpdateShootingPointDirection()
+    {
+        // 플레이어가 바라보는 방향에 따라 슈팅 포인트 회전
+        if (transform.localScale.x > 0)  // 플레이어가 오른쪽을 보면
+        {
+            shootingPoint.localPosition = new Vector3(1f, 0, 0); // 오른쪽에 위치
+            shootingPoint.rotation = Quaternion.Euler(0, 0, 0); // 오른쪽을 바라보게 설정
+        }
+        else  // 플레이어가 왼쪽을 보면
+        {
+            shootingPoint.localPosition = new Vector3(-1f, 0, 0); // 왼쪽에 위치
+            shootingPoint.rotation = Quaternion.Euler(0, 180, 0); // 왼쪽을 바라보게 설정
         }
     }
 }
