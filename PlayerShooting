@@ -17,15 +17,28 @@ public class PlayerShooting : MonoBehaviour
 
     void ShootBullet()
     {
+        if (bulletPrefab == null || shootingPoint == null) 
+        {
+            Debug.LogError("Bullet Prefab or Shooting Point is not set!");
+            return; // bulletPrefab이나 shootingPoint가 없으면 발사하지 않음
+        }
+
         // 총알을 플레이어가 보고 있는 방향으로 발사
         GameObject bullet = Instantiate(bulletPrefab, shootingPoint.position, Quaternion.identity);
         Bullet bulletScript = bullet.GetComponent<Bullet>();
 
-        // 총알의 발사 방향 설정
-        Vector2 direction = transform.localScale.x > 0 ? Vector2.right : Vector2.left;
-        bulletScript.direction = direction; // 발사 방향 설정
+        if (bulletScript != null)
+        {
+            // 총알의 발사 방향 설정
+            Vector2 direction = transform.localScale.x > 0 ? Vector2.right : Vector2.left;
+            bulletScript.direction = direction; // 발사 방향 설정
 
-        // 총알의 발사자 설정
-        bulletScript.shooter = gameObject; // 발사자를 플레이어로 설정
+            // 총알의 발사자 설정
+            bulletScript.shooter = gameObject; // 발사자를 플레이어로 설정
+        }
+        else
+        {
+            Debug.LogError("Bullet prefab does not have a Bullet script attached!");
+        }
     }
 }
