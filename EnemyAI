@@ -10,23 +10,8 @@ public class EnemyAI : MonoBehaviour
     public Transform shootPoint; // 총알 발사 지점
     public float bulletSpeed = 10f; // 총알 속도
 
-    public float jumpForce = 10f; // 점프 힘
-    public float jumpCooldown = 1f; // 점프 쿨타임
-    private float nextJumpTime = 0f; // 다음 점프 시간이 될 때까지 기다리는 변수
-
-    private bool isPlayerInRange = false;
-    private Rigidbody2D rb;
-
     private float timeBetweenShots = 2f; // 2초에 한 번 총을 쏘는 시간 간격
     private float nextShotTime = 0f; // 총을 쏘기 위한 쿨타임
-
-    // Raycast 체크 변수
-    public LayerMask groundLayer; // "Ground" 레이어를 지정할 변수
-
-    void Start()
-    {
-        rb = GetComponent<Rigidbody2D>();
-    }
 
     void Update()
     {
@@ -36,7 +21,6 @@ public class EnemyAI : MonoBehaviour
         // 플레이어가 탐지 범위에 있을 경우
         if (distanceToPlayer <= detectionRange)
         {
-            isPlayerInRange = true;
             if (distanceToPlayer <= attackRange)
             {
                 if (Time.time >= nextShotTime) // 2초마다 총을 쏘게 만듬
@@ -45,67 +29,35 @@ public class EnemyAI : MonoBehaviour
                     nextShotTime = Time.time + timeBetweenShots; // 다음 총을 쏘기 위한 쿨타임 설정
                 }
             }
-            else
-            {
-                MoveTowardsPlayer();
-            }
-        }
-        else
-        {
-            isPlayerInRange = false;
-        }
-
-        // 점프
-        if (Time.time >= nextJumpTime && distanceToPlayer <= detectionRange)
-        {
-            Jump();
-            nextJumpTime = Time.time + jumpCooldown; // 점프 쿨타임 설정
-        }
-    }
-
-    void MoveTowardsPlayer()
-    {
-        if (!isPlayerInRange) return;
-
-        // Raycast로 지면을 감지하여, 플랫폼 위에서만 움직이도록 설정
-        if (IsGrounded())
-        {
-            Vector2 direction = (player.position - transform.position).normalized;
-            transform.position = Vector2.MoveTowards(transform.position, player.position, moveSpeed * Time.deltaTime);
-        }
-        else
-        {
-            // 지면이 없으면 이동하지 않도록 처리
-            Debug.Log("Ground not detected, stopping movement.");
         }
     }
 
     void ShootAtPlayer()
     {
+        // 총알이 null인지 확인
         if (bulletPrefab != null && shootPoint != null)
         {
+            // 총알을 발사 지점에서 생성
             GameObject bullet = Instantiate(bulletPrefab, shootPoint.position, shootPoint.rotation);
-            Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
-            rb.linearVelocity = (player.position - transform.position).normalized * bulletSpeed;
+
+            // 총알 생성이 잘 되었는지 확인
+            if (bullet != null)
+            {
+                Rigidbody2D bulletRb = bullet.GetComponent<Rigidbody2D>();
+                if (bulletRb != null)
+                {
+                    // 플레이어 방향으로 총알 발사
+                    bulletRb.velocity = (player.position - transform.position).normalized * bulletSpeed;
+                }
+                else
+                {
+                    Debug.LogError("Bullet does not have Rigidbody2D component!");
+                }
+            }
         }
-    }
-
-    void Jump()
-    {
-        // 적이 점프할 때
-        Vector2 jumpDirection = Vector2.up;
-        rb.AddForce(jumpDirection * jumpForce, ForceMode2D.Impulse);
-    }
-
-    // Raycast로 지면을 확인하는 함수
-    bool IsGrounded()
-    {
-        // Raycast를 아래로 발사하여 Ground 태그가 붙은 물체가 있으면 true
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 1f, groundLayer);
-        if (hit.collider != null)
+        else
         {
-            return true; // 지면이 감지되면 true 반환
+            Debug.LogWarning("Bullet prefab or shootPoint is missing.");
         }
-        return false; // 지면이 없으면 false 반환
     }
 }
