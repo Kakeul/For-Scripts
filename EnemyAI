@@ -44,23 +44,26 @@ public class EnemyAI : MonoBehaviour
         // 총알을 발사 지점에서 클론 형태로 생성
         GameObject bullet = Instantiate(bulletPrefab, shootPoint.position, shootPoint.rotation);
 
-        // 총알이 정상적으로 생성되었는지 확인
+        // 총알 생성 확인
         if (bullet != null)
         {
-            Rigidbody2D bulletRb = bullet.GetComponent<Rigidbody2D>();
-            if (bulletRb != null)
-            {
-                // 플레이어 방향으로 총알 발사
-                bulletRb.linearVelocity = (player.position - transform.position).normalized * bulletSpeed;
-            }
-            else
-            {
-                Debug.LogError("Bullet does not have Rigidbody2D component!");
-            }
+            Debug.Log("Bullet instantiated successfully!");
         }
         else
         {
-            Debug.LogError("Failed to instantiate bullet.");
+            Debug.LogError("Bullet instantiation failed!");
+        }
+
+        // 총알의 Rigidbody2D 설정
+        Rigidbody2D bulletRb = bullet.GetComponent<Rigidbody2D>();
+        if (bulletRb != null)
+        {
+            // 플레이어 방향으로 총알 발사
+            bulletRb.velocity = (player.position - transform.position).normalized * bulletSpeed;
+        }
+        else
+        {
+            Debug.LogError("Bullet does not have Rigidbody2D component!");
         }
     }
 }
