@@ -2,7 +2,23 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    public float damage = 10f; // 총알 피해
+    public int damage = 10; // 총알 피해
+    public float speed = 10f; // 총알 속도
+    public Vector2 direction; // 총알 발사 방향
+
+    private Rigidbody2D rb;
+
+    void Start()
+    {
+        // Rigidbody2D 컴포넌트를 가져옵니다.
+        rb = GetComponent<Rigidbody2D>();
+
+        // 총알 속도를 설정합니다.
+        if (rb != null)
+        {
+            rb.linearVelocity = direction * speed; // 방향에 속도를 곱해서 날아가도록 설정
+        }
+    }
 
     // 총알이 다른 오브젝트와 충돌했을 때
     void OnCollisionEnter2D(Collision2D collision)
