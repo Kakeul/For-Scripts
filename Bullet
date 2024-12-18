@@ -1,5 +1,5 @@
 using UnityEngine;
-using System.Collections;  // 이 줄을 추가합니다.
+using System.Collections;
 
 public class Bullet : MonoBehaviour
 {
@@ -13,12 +13,15 @@ public class Bullet : MonoBehaviour
 
     void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
+        rb = GetComponent<Rigidbody2D>(); // Rigidbody2D 컴포넌트 가져오기
 
-        // 총알이 발사 방향으로 속도를 설정합니다.
+        // Rigidbody2D의 Gravity Scale을 0으로 설정 (중력 영향을 없애기 위해)
+        rb.gravityScale = 0;
+
+        // 총알이 발사될 방향과 속도를 설정합니다.
         if (rb != null)
         {
-            rb.linearVelocity = direction * speed;
+            rb.velocity = direction * speed; // velocity 사용해서 방향과 속도 설정
         }
 
         // 일정 시간 후 충돌을 가능하게 합니다.
