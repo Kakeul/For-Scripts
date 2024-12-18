@@ -9,15 +9,22 @@ public class Bullet : MonoBehaviour
 
     public GameObject shooter; // 총알을 발사한 객체 (플레이어 또는 적)
 
+    private Rigidbody2D rb; // Rigidbody2D를 사용하여 총알의 물리적 이동을 처리
+
     private bool hasCollided = false; // 충돌 여부 확인용 변수
 
     private void Start()
     {
+        rb = GetComponent<Rigidbody2D>(); // Rigidbody2D 컴포넌트 참조
+
         // 총알의 방향이 지정되지 않으면 기본적으로 오른쪽 방향으로 설정
         if (direction == Vector2.zero)
         {
             direction = Vector2.right;
         }
+
+        // 총알의 방향에 맞게 이동 시작
+        rb.linearVelocity = direction * speed;
 
         // 일정 시간이 지나면 총알 삭제
         Invoke("DestroyBullet", lifetime);
@@ -28,8 +35,8 @@ public class Bullet : MonoBehaviour
         // 총알이 충돌하지 않았다면 계속 이동
         if (!hasCollided)
         {
-            // 물리엔진을 사용하지 않고 수동으로 총알 이동
-            transform.Translate(direction * speed * Time.deltaTime);
+            // 물리엔진을 사용하지 않고 수동으로 총알 이동 (이 부분은 필요 없을 수 있음)
+            // transform.Translate(direction * speed * Time.deltaTime);
         }
     }
 
