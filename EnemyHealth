@@ -36,6 +36,9 @@ public class EnemyHealth : MonoBehaviour
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth); // 체력이 0보다 작지 않도록
         healthSlider.value = currentHealth; // 슬라이더 값 업데이트
 
+        // 디버깅 메시지 출력
+        Debug.Log("Current Health: " + currentHealth); // 체력 값 출력
+
         if (currentHealth <= 0)
         {
             Die();
