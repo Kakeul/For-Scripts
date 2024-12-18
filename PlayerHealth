@@ -19,6 +19,9 @@ public class PlayerHealth : MonoBehaviour
         healthSlider.maxValue = maxHealth; // 슬라이더의 최대값을 최대 체력으로 설정
         healthSlider.value = currentHealth; // 슬라이더의 초기값 설정
         uiManager = FindObjectOfType<UIManager>(); // UIManager 찾기
+
+        // 최대 체력이 1 이상인지 확인
+        maxHealth = Mathf.Max(maxHealth, 1f);
     }
 
     void Update()
@@ -50,13 +53,20 @@ public class PlayerHealth : MonoBehaviour
     void Die()
     {
         // 플레이어 사망 UI 표시
-        uiManager.ShowPlayerDeath();
+        if (uiManager != null)
+        {
+            uiManager.ShowPlayerDeath();
+        }
 
         // 플레이어 죽을 때 이펙트 생성
         if (deathEffectPrefab != null)
         {
             // 플레이어 위치에서 이펙트 생성
             Instantiate(deathEffectPrefab, transform.position, Quaternion.identity);
+        }
+        else
+        {
+            Debug.LogWarning("Death effect prefab is not assigned!");
         }
 
         // 플레이어 죽음 시 처리할 다른 로직들 (예: 플레이어 오브젝트 파괴)
