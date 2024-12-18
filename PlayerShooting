@@ -23,6 +23,10 @@ public class PlayerShooting : MonoBehaviour
 
         // 총알을 오른쪽 또는 왼쪽으로 발사
         Vector2 direction = transform.localScale.x > 0 ? Vector2.right : Vector2.left;
-        bulletRb.velocity = direction * shootingForce;
+        bulletRb.linearVelocity = direction * shootingForce;
+
+        // 총알의 발사자를 플레이어로 설정
+        Bullet bulletScript = bullet.GetComponent<Bullet>();
+        bulletScript.shooter = gameObject; // 발사자를 플레이어로 설정
     }
 }
