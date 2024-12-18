@@ -13,8 +13,6 @@ public class EnemyAI : MonoBehaviour
     private float timeBetweenShots = 2f; // 2초에 한 번 총을 쏘는 시간 간격
     private float nextShotTime = 0f; // 총을 쏘기 위한 쿨타임
 
-    private bool isPlayerInRange = false;
-
     void Update()
     {
         // 플레이어와의 거리 계산
@@ -23,7 +21,6 @@ public class EnemyAI : MonoBehaviour
         // 플레이어가 탐지 범위에 있을 경우
         if (distanceToPlayer <= detectionRange)
         {
-            isPlayerInRange = true;
             if (distanceToPlayer <= attackRange)
             {
                 if (Time.time >= nextShotTime) // 2초마다 총을 쏘게 만듬
@@ -32,92 +29,38 @@ public class EnemyAI : MonoBehaviour
                     nextShotTime = Time.time + timeBetweenShots; // 다음 총을 쏘기 위한 쿨타임 설정
                 }
             }
-            else
-            {
-                MoveTowardsPlayer(); // 플레이어를 향해 이동
-            }
-
-            // 플레이어의 위치에 따라 적의 방향을 조정
-            FlipTowardsPlayer();
         }
-        else
-        {
-            isPlayerInRange = false;
-        }
-
-        // 발사 지점 위치를 플레이어 방향에 맞게 조정
-        AdjustShootPointPosition();
-    }
-
-    void MoveTowardsPlayer()
-    {
-        if (!isPlayerInRange) return;
-
-        // 플레이어의 위치로 이동
-        Vector2 direction = (player.position - transform.position).normalized;
-        transform.position = Vector2.MoveTowards(transform.position, player.position, moveSpeed * Time.deltaTime);
     }
 
     void ShootAtPlayer()
     {
-        if (bulletPrefab != null && shootPoint != null)
+        // bulletPrefab이나 shootPoint가 설정되지 않았으면 발사하지 않음
+        if (bulletPrefab == null || shootPoint == null)
         {
-            GameObject bullet = Instantiate(bulletPrefab, shootPoint.position, shootPoint.rotation);
-            Bullet bulletScript = bullet.GetComponent<Bullet>();
+            Debug.LogWarning("Bullet prefab or shootPoint is missing.");
+            return;
+        }
 
-            if (bulletScript != null)
+        // 총알을 발사 지점에서 클론 형태로 생성
+        GameObject bullet = Instantiate(bulletPrefab, shootPoint.position, shootPoint.rotation);
+
+        // 총알이 정상적으로 생성되었는지 확인
+        if (bullet != null)
+        {
+            Rigidbody2D bulletRb = bullet.GetComponent<Rigidbody2D>();
+            if (bulletRb != null)
             {
-                // 총알의 발사 방향 설정 (플레이어 방향)
-                Vector2 direction = (player.position - transform.position).normalized;
-                bulletScript.direction = direction;
-
-                // 총알의 발사자 설정
-                bulletScript.shooter = gameObject;
+                // 플레이어 방향으로 총알 발사
+                bulletRb.linearVelocity = (player.position - transform.position).normalized * bulletSpeed;
             }
             else
             {
-                Debug.LogError("Bullet prefab does not have a Bullet script attached!");
+                Debug.LogError("Bullet does not have Rigidbody2D component!");
             }
         }
         else
         {
-            Debug.LogError("Bullet prefab or shootPoint is missing.");
+            Debug.LogError("Failed to instantiate bullet.");
         }
-    }
-
-    // 발사 지점 위치를 플레이어 방향에 맞게 조정
-    void AdjustShootPointPosition()
-    {
-        if (transform.localScale.x > 0) // 오른쪽을 보고 있을 때
-        {
-            shootPoint.localPosition = new Vector3(1f, shootPoint.localPosition.y, shootPoint.localPosition.z); // 오른쪽에 발사 위치 설정
-        }
-        else // 왼쪽을 보고 있을 때
-        {
-            shootPoint.localPosition = new Vector3(-1f, shootPoint.localPosition.y, shootPoint.localPosition.z); // 왼쪽에 발사 위치 설정
-        }
-    }
-
-    // 플레이어의 위치에 따라 적의 방향을 반전
-    void FlipTowardsPlayer()
-    {
-        // 플레이어가 적의 왼쪽에 있으면 왼쪽을 보고, 오른쪽에 있으면 오른쪽을 봄
-        if (player.position.x < transform.position.x && transform.localScale.x > 0) // 플레이어가 왼쪽에 있을 때
-        {
-            Flip(); // 왼쪽을 보기 위해 flip
-        }
-        else if (player.position.x > transform.position.x && transform.localScale.x < 0) // 플레이어가 오른쪽에 있을 때
-        {
-            Flip(); // 오른쪽을 보기 위해 flip
-        }
-    }
-
-    // Flip the character to face the player
-    void Flip()
-    {
-        // `localScale.x` 값을 반전시켜서 왼쪽 또는 오른쪽을 보도록 만듦
-        Vector3 scale = transform.localScale;
-        scale.x *= -1; // x값을 반전시켜서 방향 전환
-        transform.localScale = scale;
     }
 }
