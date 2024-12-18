@@ -30,40 +30,48 @@ public class EnemyAI : MonoBehaviour
                 }
             }
         }
+
+        // 적이 바라보는 방향에 따라 슈팅 포인트 회전
+        UpdateShootingPointDirection();
     }
 
     void ShootAtPlayer()
     {
-        // bulletPrefab이나 shootPoint가 설정되지 않았으면 발사하지 않음
-        if (bulletPrefab == null || shootPoint == null)
+        if (bulletPrefab != null && shootPoint != null)
+        {
+            GameObject bullet = Instantiate(bulletPrefab, shootPoint.position, shootPoint.rotation);
+
+            if (bullet != null)
+            {
+                Rigidbody2D bulletRb = bullet.GetComponent<Rigidbody2D>();
+                if (bulletRb != null)
+                {
+                    bulletRb.linearVelocity = (player.position - transform.position).normalized * bulletSpeed;
+                }
+                else
+                {
+                    Debug.LogError("Bullet does not have Rigidbody2D component!");
+                }
+            }
+        }
+        else
         {
             Debug.LogWarning("Bullet prefab or shootPoint is missing.");
-            return;
         }
+    }
 
-        // 총알을 발사 지점에서 클론 형태로 생성
-        GameObject bullet = Instantiate(bulletPrefab, shootPoint.position, shootPoint.rotation);
-
-        // 총알 생성 확인
-        if (bullet != null)
+    void UpdateShootingPointDirection()
+    {
+        // 적이 바라보는 방향에 맞춰 슈팅 포인트 회전
+        if (transform.localScale.x > 0)  // 적이 오른쪽을 보면
         {
-            Debug.Log("Bullet instantiated successfully!");
+            shootPoint.localPosition = new Vector3(1f, 0, 0); // 오른쪽에 위치
+            shootPoint.rotation = Quaternion.Euler(0, 0, 0); // 오른쪽을 바라보게 설정
         }
-        else
+        else  // 적이 왼쪽을 보면
         {
-            Debug.LogError("Bullet instantiation failed!");
-        }
-
-        // 총알의 Rigidbody2D 설정
-        Rigidbody2D bulletRb = bullet.GetComponent<Rigidbody2D>();
-        if (bulletRb != null)
-        {
-            // 플레이어 방향으로 총알 발사
-            bulletRb.linearVelocity = (player.position - transform.position).normalized * bulletSpeed;
-        }
-        else
-        {
-            Debug.LogError("Bullet does not have Rigidbody2D component!");
+            shootPoint.localPosition = new Vector3(-1f, 0, 0); // 왼쪽에 위치
+            shootPoint.rotation = Quaternion.Euler(0, 180, 0); // 왼쪽을 바라보게 설정
         }
     }
 }
