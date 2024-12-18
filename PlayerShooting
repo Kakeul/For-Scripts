@@ -26,16 +26,6 @@ public class PlayerShooting : MonoBehaviour
         // 총알을 클론 형태로 생성
         GameObject bullet = Instantiate(bulletPrefab, shootingPoint.position, shootingPoint.rotation);
 
-        // 총알 생성이 정상적으로 되었는지 확인
-        if (bullet != null)
-        {
-            Debug.Log("Bullet instantiated successfully!");
-        }
-        else
-        {
-            Debug.LogError("Bullet instantiation failed!");
-        }
-
         Bullet bulletScript = bullet.GetComponent<Bullet>();
 
         if (bulletScript != null)
