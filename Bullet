@@ -5,14 +5,14 @@ public class Bullet : MonoBehaviour
     public int damage = 10; // 총알 피해
     public float speed = 10f; // 총알 속도
     public Vector2 direction; // 총알 발사 방향
-    private float lifetime = 5f; // 총알 생명 시간 (5초 후 총알 삭제)
+    private float lifetime = 8f; // 총알 생명 시간
 
     public GameObject shooter; // 총알을 발사한 객체 (플레이어 또는 적)
 
     private void Start()
     {
         // 일정 시간이 지나면 총알 클론 삭제
-        Invoke("DestroyBullet", lifetime); // 5초 후 DestroyBullet 함수 호출
+        Invoke("DestroyBullet", lifetime); // 8초 후 DestroyBullet 함수 호출
     }
 
     private void Update()
@@ -30,10 +30,10 @@ public class Bullet : MonoBehaviour
     // 충돌 처리 (충돌 시 총알이 사라지고 피해를 입힘)
     void OnCollisionEnter2D(Collision2D collision)
     {
-        // 총알을 발사한 객체와 충돌하는지 확인
+        // 총알을 발사한 객체와 충돌하면 피해를 주지 않고 총알을 파괴
         if (collision.gameObject == shooter)
         {
-            // 자기 자신과 충돌하면 피해를 주지 않고 총알을 파괴
+            // 자기 자신과 충돌하면 총알을 파괴
             Destroy(gameObject);
             return;
         }
