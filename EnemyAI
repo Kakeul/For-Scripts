@@ -62,7 +62,7 @@ public class EnemyAI : MonoBehaviour
                 Rigidbody2D bulletRb = bullet.GetComponent<Rigidbody2D>();
                 if (bulletRb != null)
                 {
-                    bulletRb.linearVelocity = Vector2.left * bulletSpeed; // 항상 왼쪽으로 총알 발사
+                    bulletRb.velocity = Vector2.left * bulletSpeed; // 항상 왼쪽으로 총알 발사
                 }
                 else
                 {
