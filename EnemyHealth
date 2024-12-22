@@ -13,6 +13,7 @@ public class EnemyHealth : MonoBehaviour
 
     public GameObject deathEffectPrefab;  // 적이 죽을 때 나타날 이펙트 프리팹
     public UIManager uiManager;  // UIManager를 참조 (인스펙터에서 연결)
+    public Go_Main go_Main;
 
     void Start()
     {
@@ -20,10 +21,12 @@ public class EnemyHealth : MonoBehaviour
         maxHealth = Mathf.Max(maxHealth, 1f); // 최대 체력이 1보다 작은 경우 1로 설정
         healthSlider.maxValue = maxHealth; // 슬라이더의 최대값을 최대 체력으로 설정
         healthSlider.value = currentHealth; // 슬라이더의 초기값 설정
-        
+
         // UIManager가 제대로 연결되었는지 확인
         if (uiManager == null)
         {
+            // UIManager를 찾을 수 없으면 씬 내에서 찾아보세요
+            uiManager = FindAnyObjectByType<UIManager>();
             Debug.LogError("UIManager is not assigned in the Inspector!");
         }
     }
@@ -53,24 +56,14 @@ public class EnemyHealth : MonoBehaviour
     // 적이 죽을 때 처리
     void Die()
     {
+        Debug.Log("Kill");
+        go_Main.Show();
+
         // 죽을 때 이펙트 생성
         if (deathEffectPrefab != null)
         {
             Instantiate(deathEffectPrefab, transform.position, Quaternion.identity);
         }
-
-        // 스테이지 클리어 UI를 일정 시간 후에 표시 (1.5초 대기 후)
-        StartCoroutine(ShowStageClearUIWithDelay());
-
-        // 적 오브젝트 파괴
-        Destroy(gameObject);
-    }
-
-    // 스테이지 클리어 UI를 일정 시간 후에 표시하는 코루틴
-    IEnumerator ShowStageClearUIWithDelay()
-    {
-        // 1.5초 대기
-        yield return new WaitForSeconds(1.5f);
 
         if (uiManager != null)
         {
@@ -81,5 +74,9 @@ public class EnemyHealth : MonoBehaviour
         {
             Debug.LogWarning("UIManager not found! Cannot show Stage Clear UI.");
         }
+        // 적 오브젝트 파괴
+        Destroy(gameObject);
+
+        Debug.Log("Enemy died. Showing stage clear UI.");
     }
 }
