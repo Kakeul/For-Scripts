@@ -12,7 +12,7 @@ public class EnemyHealth : MonoBehaviour
     private float currentHealth; // 현재 체력
 
     public GameObject deathEffectPrefab;  // 적이 죽을 때 나타날 이펙트 프리팹
-    public UIManager uiManager;  // UIManager를 참조
+    public UIManager uiManager;  // UIManager를 참조 (인스펙터에서 연결)
 
     void Start()
     {
@@ -20,7 +20,12 @@ public class EnemyHealth : MonoBehaviour
         maxHealth = Mathf.Max(maxHealth, 1f); // 최대 체력이 1보다 작은 경우 1로 설정
         healthSlider.maxValue = maxHealth; // 슬라이더의 최대값을 최대 체력으로 설정
         healthSlider.value = currentHealth; // 슬라이더의 초기값 설정
-        uiManager = Object.FindAnyObjectByType<UIManager>(); // UIManager 찾기
+        
+        // UIManager가 제대로 연결되었는지 확인
+        if (uiManager == null)
+        {
+            Debug.LogError("UIManager is not assigned in the Inspector!");
+        }
     }
 
     void Update()
