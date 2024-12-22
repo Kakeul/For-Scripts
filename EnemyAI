@@ -22,17 +22,31 @@ public class EnemyAI : MonoBehaviour
     public float leftBound = -5f; // 왼쪽 끝 범위
     public float rightBound = 5f; // 오른쪽 끝 범위
 
+    // 추가: Transform을 삭제된 객체에서 접근할 경우 발생할 수 있는 오류 방지
+    private Transform cachedPlayerTransform;
+
+    void Start()
+    {
+        // 초기화: player가 할당되지 않으면 오류를 방지하기 위해
+        if (player != null)
+        {
+            cachedPlayerTransform = player;
+        }
+    }
+
     void Update()
     {
         // 플레이어와의 거리 계산
-        float distanceToPlayer = Vector2.Distance(transform.position, player.position);
+        if (cachedPlayerTransform == null) return; // 플레이어가 존재하지 않으면 아무것도 하지 않음
+        float distanceToPlayer = Vector2.Distance(transform.position, cachedPlayerTransform.position);
 
         // 플레이어가 탐지 범위에 있을 경우
         if (distanceToPlayer <= detectionRange)
         {
+            // 플레이어가 공격 범위에 있을 경우
             if (distanceToPlayer <= attackRange)
             {
-                if (Time.time >= nextShotTime) // 0.7초마다 총을 쏘게 만듬
+                if (Time.time >= nextShotTime) // 0.3초마다 총을 쏘게 만듬
                 {
                     ShootAtPlayer();
                     nextShotTime = Time.time + timeBetweenShots; // 다음 총을 쏘기 위한 쿨타임 설정
@@ -117,5 +131,11 @@ public class EnemyAI : MonoBehaviour
         {
             isJumping = false; // 바닥에 닿으면 점프 상태가 끝남
         }
+    }
+
+    // 추가: 만약 플레이어가 죽었다면, 캐싱된 플레이어 객체를 null로 설정하여 더 이상 참조하지 않도록 함
+    public void OnPlayerDeath()
+    {
+        cachedPlayerTransform = null; // 더 이상 플레이어 객체를 추적하지 않음
     }
 }
