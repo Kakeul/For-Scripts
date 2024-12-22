@@ -54,27 +54,27 @@ public class EnemyHealth : MonoBehaviour
             Instantiate(deathEffectPrefab, transform.position, Quaternion.identity);
         }
 
-        // 1.5초 후 UI 표시 (Coroutine을 사용)
-        StartCoroutine(ShowGameOverUIWithDelay());
+        // 스테이지 클리어 UI를 일정 시간 후에 표시 (1.5초 대기 후)
+        StartCoroutine(ShowStageClearUIWithDelay());
 
         // 적 오브젝트 파괴
         Destroy(gameObject);
     }
 
-    // 게임 오버 UI를 일정 시간 후에 표시하는 코루틴
-    IEnumerator ShowGameOverUIWithDelay()
+    // 스테이지 클리어 UI를 일정 시간 후에 표시하는 코루틴
+    IEnumerator ShowStageClearUIWithDelay()
     {
         // 1.5초 대기
         yield return new WaitForSeconds(1.5f);
 
         if (uiManager != null)
         {
-            // UI 표시
-            uiManager.ShowGameOver();
+            // 스테이지 클리어 UI 표시
+            uiManager.ShowStageClear();
         }
         else
         {
-            Debug.LogWarning("UIManager not found! Cannot show Game Over UI.");
+            Debug.LogWarning("UIManager not found! Cannot show Stage Clear UI.");
         }
     }
 }
