@@ -22,6 +22,12 @@ public class EnemyAI : MonoBehaviour
     public float leftBound = -5f; // 왼쪽 끝 범위
     public float rightBound = 5f; // 오른쪽 끝 범위
 
+    // 적의 체력 관련 변수
+    public float maxHealth = 100f; // 최대 체력
+    private float currentHealth; // 현재 체력
+
+    private UIManager uiManager;  // UIManager 참조
+
     // 추가: Transform을 삭제된 객체에서 접근할 경우 발생할 수 있는 오류 방지
     private Transform cachedPlayerTransform;
 
@@ -32,6 +38,12 @@ public class EnemyAI : MonoBehaviour
         {
             cachedPlayerTransform = player;
         }
+
+        // 체력 초기화
+        currentHealth = maxHealth;
+
+        // UIManager 찾기
+        uiManager = Object.FindObjectOfType<UIManager>();
     }
 
     void Update()
@@ -62,6 +74,12 @@ public class EnemyAI : MonoBehaviour
                 Jump();
                 nextJumpTime = Time.time + jumpCooldown; // 점프 쿨타임 설정
             }
+        }
+
+        // 적의 체력이 0 이하일 때 스테이지 클리어 UI 표시
+        if (currentHealth <= 0)
+        {
+            Die(); // 적의 체력이 0이면 사망 처리
         }
     }
 
@@ -133,9 +151,28 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-    // 추가: 만약 플레이어가 죽었다면, 캐싱된 플레이어 객체를 null로 설정하여 더 이상 참조하지 않도록 함
-    public void OnPlayerDeath()
+    // 적이 데미지를 받는 함수
+    public void TakeDamage(float damage)
     {
-        cachedPlayerTransform = null; // 더 이상 플레이어 객체를 추적하지 않음
+        currentHealth -= damage;
+        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth); // 체력이 0보다 작지 않도록
+
+        if (currentHealth <= 0)
+        {
+            Die(); // 체력이 0이면 사망 처리
+        }
+    }
+
+    // 적이 죽었을 때 처리
+    void Die()
+    {
+        // 스테이지 클리어 UI 표시
+        if (uiManager != null)
+        {
+            uiManager.ShowStageClear();
+        }
+
+        // 적의 죽음 처리 (적 오브젝트 파괴)
+        Destroy(gameObject); // 적 오브젝트 파괴
     }
 }
