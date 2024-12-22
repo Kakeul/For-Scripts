@@ -8,8 +8,8 @@ public class PlayerShooting : MonoBehaviour
 
     void Update()
     {
-        // 'J' 키로 총 발사
-        if (Input.GetKeyDown(KeyCode.J))
+        // 'J' 키 또는 마우스 클릭으로 총 발사
+        if (Input.GetKeyDown(KeyCode.J) || Input.GetButtonDown("Fire1"))
         {
             ShootBullet();
         }
