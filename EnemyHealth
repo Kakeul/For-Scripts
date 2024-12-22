@@ -20,7 +20,7 @@ public class EnemyHealth : MonoBehaviour
         maxHealth = Mathf.Max(maxHealth, 1f); // 최대 체력이 1보다 작은 경우 1로 설정
         healthSlider.maxValue = maxHealth; // 슬라이더의 최대값을 최대 체력으로 설정
         healthSlider.value = currentHealth; // 슬라이더의 초기값 설정
-        uiManager = FindObjectOfType<UIManager>(); // UIManager 찾기
+        uiManager = Object.FindAnyObjectByType<UIManager>(); // UIManager 찾기
     }
 
     void Update()
