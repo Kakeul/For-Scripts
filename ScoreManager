@@ -1,0 +1,31 @@
+using UnityEngine;
+using TMPro;
+
+public class ScoreManager : MonoBehaviour
+{
+    public TMP_Text scoreText;  // 점수를 표시할 텍스트 UI
+    public TimerDamage timerScript;  // TimerDamage 스크립트를 참조할 변수
+    public PlayerHealth playerHealth;  // PlayerHealth 스크립트를 참조할 변수
+
+    private float score;  // 점수 변수
+
+    void Start()
+    {
+        // TimerDamage와 PlayerHealth 스크립트를 해당 오브젝트에서 가져오기
+        timerScript = FindAnyObjectByType<TimerDamage>();
+        playerHealth = FindAnyObjectByType<PlayerHealth>();
+    }
+
+    void Update()
+    {
+        // 타이머가 멈추면 점수를 계산하고 UI에 표시
+        if (timerScript != null && timerScript.timerFinished)
+        {
+            // 타이머의 남은 시간과 플레이어 체력을 곱하여 점수 계산
+            score = Mathf.Round(timerScript.timer * playerHealth.GetCurrentHealth());
+
+            // 점수를 UI 텍스트로 표시
+            scoreText.text = "Score: " + score.ToString();
+        }
+    }
+}
