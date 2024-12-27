@@ -16,6 +16,9 @@ public class EnemyHealth : MonoBehaviour
 
     private bool isAlive = true; // 적이 살아있는지 여부
 
+    // TimerDamage 스크립트 참조를 위한 변수 추가
+    private TimerDamage timerScript;
+
     void Start()
     {
         currentHealth = maxHealth; // 초기 체력 설정
@@ -29,6 +32,13 @@ public class EnemyHealth : MonoBehaviour
             // UIManager를 찾을 수 없으면 씬 내에서 찾아보세요
             uiManager = FindAnyObjectByType<UIManager>();
             Debug.LogError("UIManager is not assigned in the Inspector!");
+        }
+
+        // TimerDamage 스크립트를 찾기
+        timerScript = FindAnyObjectByType<TimerDamage>();
+        if (timerScript == null)
+        {
+            Debug.LogError("TimerDamage script not found in the scene!");
         }
     }
 
@@ -60,6 +70,14 @@ public class EnemyHealth : MonoBehaviour
         isAlive = false;  // 적이 죽었으므로 상태를 false로 변경
         Debug.Log("Enemy died. isAlive = " + isAlive);  // 로그 추가
 
+        // 타이머 멈추기
+        if (timerScript != null)
+        {
+            timerScript.timerFinished = true;  // 타이머를 멈춤
+            Debug.Log("Timer stopped because the enemy is dead.");
+        }
+
+        // 적이 죽으면 추가 작업
         if (go_Main != null)
         {
             go_Main.Show();
@@ -79,7 +97,6 @@ public class EnemyHealth : MonoBehaviour
         // 적 오브젝트 파괴
         Destroy(gameObject);
     }
-
 
     // 적이 살아있는지 확인하는 메서드
     public bool IsAlive()
