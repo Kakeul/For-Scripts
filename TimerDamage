@@ -1,0 +1,116 @@
+using UnityEngine;
+using TMPro;
+
+public class TimerDamage : MonoBehaviour
+{
+    public float timer = 120f;  // 2분 타이머 (초 단위)
+    public float damageAmount = 10f;  // 플레이어에게 줄 데미지 양
+    public bool timerFinished = false;  // 타이머가 끝났는지 여부
+
+    public GameObject player;  // 플레이어 오브젝트
+    public PlayerHealth playerHealth;  // PlayerHealth 스크립트를 참조할 변수
+    public TMP_Text timerText;  // 타이머를 표시할 TMP 텍스트
+
+    public GameObject enemy;  // 적 오브젝트
+    public EnemyHealth enemyHealth;  // 적의 Health 컴포넌트
+
+    public TMP_Text scoreText;  // 점수를 표시할 TMP 텍스트
+    private float score = 0f;  // 최종 점수
+
+    void Start()
+    {
+        // "Player" 태그를 가진 오브젝트에서 PlayerHealth 스크립트를 찾음
+        GameObject player = GameObject.FindWithTag("Player");
+
+        if (player != null)
+        {
+            playerHealth = player.GetComponent<PlayerHealth>();  // PlayerHealth 컴포넌트 가져오기
+        }
+        else
+        {
+            Debug.LogError("Player not found!");
+        }
+
+        if (enemy != null)
+        {
+            enemyHealth = enemy.GetComponent<EnemyHealth>();  // 적의 Health 컴포넌트 가져오기
+        }
+
+        if (timerText == null)
+        {
+            Debug.LogWarning("Timer Text UI element is not assigned.");
+        }
+    }
+
+    void Update()
+    {
+        // 플레이어나 적이 죽었을 때 타이머 멈추기 (둘 중 하나만 죽으면 타이머 멈춤)
+        if ((playerHealth != null && !playerHealth.IsAlive()) ||
+            (enemyHealth != null && !enemyHealth.IsAlive()))
+        {
+            if (!timerFinished)  // 타이머가 이미 멈춘 상태가 아니라면
+            {
+                timerFinished = true;  // 타이머 종료
+                Debug.Log("Timer stopped because player or enemy is dead.");
+                CalculateScore();  // 점수 계산
+            }
+        }
+
+        // 타이머가 끝나지 않은 상태에서만 카운트다운
+        if (!timerFinished)
+        {
+            timer -= Time.deltaTime;  // deltaTime을 이용해 매 프레임 타이머 감소
+
+            // 타이머가 0보다 작거나 같으면
+            if (timer <= 0f)
+            {
+                timerFinished = true;  // 타이머 끝났다고 표시
+                timer = 0f;  // 타이머가 0초로 설정
+                ApplyDamageToPlayer();  // 데미지 주기
+                CalculateScore();  // 점수 계산
+            }
+        }
+
+        // 타이머 남은 시간을 UI 텍스트로 표시
+        UpdateTimerUI();
+    }
+
+    // 타이머 남은 시간을 UI에 업데이트
+    void UpdateTimerUI()
+    {
+        if (timerText != null)
+        {
+            int minutes = Mathf.FloorToInt(timer / 60);  // 분 계산
+            int seconds = Mathf.FloorToInt(timer % 60);  // 초 계산
+            float milliseconds = (timer % 1) * 1000;  // 밀리초 계산
+
+            // 00:00.000 형식으로 시간 표시
+            timerText.text = string.Format("{0:D2}:{1:D2}.{2:D3}", minutes, seconds, Mathf.FloorToInt(milliseconds));
+        }
+    }
+
+    // 타이머가 끝났을 때 플레이어에게 데미지를 주는 함수
+    void ApplyDamageToPlayer()
+    {
+        if (playerHealth != null)
+        {
+            playerHealth.TakeDamage(damageAmount);  // 데미지 주기
+            Debug.Log("Player took " + damageAmount + " damage.");
+        }
+    }
+
+    // 점수 계산 함수
+    void CalculateScore()
+    {
+        // 점수는 타이머 시간과 플레이어 체력의 곱으로 계산
+        float playerHealthValue = playerHealth.GetCurrentHealth();  // 현재 체력 가져오기
+        score = Mathf.Round(timer * playerHealthValue);  // 계산된 점수 (소수점 반올림)
+
+        if (scoreText != null)
+        {
+            scoreText.text = "Score: " + score.ToString("0");  // 점수 텍스트에 표시
+        }
+
+        Debug.Log("Final Score: " + score);  // 디버깅 메시지
+    }
+}
