@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
 
 public class EnemyHealth : MonoBehaviour
 {
@@ -14,6 +13,8 @@ public class EnemyHealth : MonoBehaviour
     public GameObject deathEffectPrefab;  // 적이 죽을 때 나타날 이펙트 프리팹
     public UIManager uiManager;  // UIManager를 참조 (인스펙터에서 연결)
     public Go_Main go_Main;
+
+    private bool isAlive = true; // 적이 살아있는지 여부
 
     void Start()
     {
@@ -56,8 +57,13 @@ public class EnemyHealth : MonoBehaviour
     // 적이 죽을 때 처리
     void Die()
     {
-        Debug.Log("Kill");
-        go_Main.Show();
+        isAlive = false;  // 적이 죽었으므로 상태를 false로 변경
+        Debug.Log("Enemy died. isAlive = " + isAlive);  // 로그 추가
+
+        if (go_Main != null)
+        {
+            go_Main.Show();
+        }
 
         // 죽을 때 이펙트 생성
         if (deathEffectPrefab != null)
@@ -67,16 +73,17 @@ public class EnemyHealth : MonoBehaviour
 
         if (uiManager != null)
         {
-            // 스테이지 클리어 UI 표시
             uiManager.ShowStageClear();
         }
-        else
-        {
-            Debug.LogWarning("UIManager not found! Cannot show Stage Clear UI.");
-        }
+
         // 적 오브젝트 파괴
         Destroy(gameObject);
+    }
 
-        Debug.Log("Enemy died. Showing stage clear UI.");
+
+    // 적이 살아있는지 확인하는 메서드
+    public bool IsAlive()
+    {
+        return isAlive;
     }
 }
